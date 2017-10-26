@@ -1,0 +1,80 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+    <style>
+        .t1 {
+        width: 25px;
+        display: inline-block;
+        }
+
+        .t2 {
+        width: 50%;
+        display: inline-block;
+        }
+
+        .t3 {
+        width: 25%;
+        display: inline-block;
+        }
+    </style>
+
+    <f:section title="TelegramBot">
+
+        <f:entry title="Log to console" field="shouldLogToConsole"
+                 description="Check if we should log messages to Jenkins console">
+            <f:checkbox default="true"/>
+        </f:entry>
+
+        <f:entry title="Telegram Bot name" field="botName" description="Paste your bot name">
+            <f:textbox/>
+        </f:entry>
+
+        <f:entry title="Telegram Bot token" field="botToken" description="Paste your bot token">
+            <f:password/>
+        </f:entry>
+
+        <f:entry title="Approval" description="Choose your approval type">
+            <table>
+                <f:radioBlock name="approval" title="All" value="ALL"
+                              checked="${descriptor.getApprovalType() == 'ALL'}"/>
+
+                <f:radioBlock name="approval" title="Manual" value="MANUAL"
+                              checked="${descriptor.getApprovalType() == 'MANUAL'}">
+
+                    <f:entry title="Subscribed (${descriptor.getUsers().size()})">
+
+                        <div style="max-height: 300px; overflow: auto;">
+
+                            <div style="display: inline;">
+
+                                <div class="t1">
+                                </div>
+                                <div class="t2">
+                                    <b>Name</b>
+                                </div>
+                                <div class="t3">
+                                    <b>ID</b>
+                                </div>
+
+                                <f:repeatable var="user" name="users" items="${descriptor.getUsers()}"
+                                              noAddButton="true" minimum="0">
+
+                                    <div class="t1">
+                                        <f:checkbox checked="${user.isApproved()}" field="${user.getId()}"/>
+                                    </div>
+                                    <div class="t2">
+                                        ${user.name}
+                                    </div>
+                                    <div class="t3">
+                                        ${user.id}
+                                    </div>
+                                </f:repeatable>
+                            </div>
+                        </div>
+                    </f:entry>
+                </f:radioBlock>
+            </table>
+        </f:entry>
+
+    </f:section>
+</j:jelly>

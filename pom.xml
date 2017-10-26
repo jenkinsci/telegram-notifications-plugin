@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <jenkins.version>2.7</jenkins.version>
+        <java.level>8</java.level>
+        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <source.level>1.8</source.level>
+        <target.level>1.8</target.level>
+        <junit.version>4.12</junit.version>
+        <jacoco.version>0.7.4.201502262128</jacoco.version>
+        <telegrambots.version>v2.3.3.4</telegrambots.version>
+        <log4j.version>1.2.17</log4j.version>
+        <job-dsl.version>1.48</job-dsl.version>
+        <log4j.configuration>log4j.properties</log4j.configuration>
+        <findbugs.failOnError>false</findbugs.failOnError>
+        <maven-hpi-plugin.disabledTestInjection>true</maven-hpi-plugin.disabledTestInjection>
+    </properties>
+
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>2.11</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>jenkins-ci.plugins</groupId>
+    <artifactId>telegram-notifications</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+
+    <name>Telegram Bot Plugin</name>
+    <description>This plugin allows you to send messages from Jenkins jobs to Telegram chat.</description>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/TelegramBotPlugin</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rubenlagus</groupId>
+            <artifactId>TelegramBots</artifactId>
+            <version>${telegrambots.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>job-dsl</artifactId>
+            <version>${job-dsl.version}</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${source.level}</source>
+                    <target>${target.level}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
