@@ -1,0 +1,8 @@
+language: java 
+
+branches:
+  only:
+    - master
+
+script: mvn clean verify
+
