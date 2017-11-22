@@ -6,17 +6,16 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.updatesreceivers.BotSession;
 
 public class TelegramBotThread extends Thread {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(TelegramBotThread.class);
 
     private final TelegramBot bot;
-    private BotSession session;
-    private TelegramBotsApi telegramBotsApi;
+
+    private static final TelegramBotsApi TELEGRAM_BOTS_API = new TelegramBotsApi();
 
     public TelegramBotThread(String botToken, String botName) {
         super(String.format("TelegramBot Thread; name=%s; token=%s", botName, botToken));
 
         bot = new TelegramBot(botToken, botName);
-        telegramBotsApi = new TelegramBotsApi();
     }
 
     public TelegramBot getBot() {
@@ -26,19 +25,21 @@ public class TelegramBotThread extends Thread {
     @Override
     public void run() {
         try {
-            session = telegramBotsApi.registerBot(bot);
-            logger.info("BotSession started");
+            // Start bot session
+            BotSession session = TELEGRAM_BOTS_API.registerBot(bot);
+            LOGGER.info("BotSession was started");
 
             while (true) {
                 if (isInterrupted()) {
+                    // If thread was interrupted bot session should be closed
                     session.close();
-                    logger.info("BotSession closed");
+                    LOGGER.info("BotSession was closed");
                     break;
                 }
             }
 
         } catch (TelegramApiException e) {
-            logger.error("Telegram API error", e);
+            LOGGER.error("Telegram API error", e);
             interrupt();
         }
     }

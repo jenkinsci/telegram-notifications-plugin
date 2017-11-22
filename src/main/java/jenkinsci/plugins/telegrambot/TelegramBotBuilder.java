@@ -1,12 +1,5 @@
 package jenkinsci.plugins.telegrambot;
 
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
-import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
-import jenkinsci.plugins.telegrambot.users.Subscribers;
-import jenkinsci.plugins.telegrambot.users.User;
-import jenkinsci.plugins.telegrambot.users.UserApprover;
-import jenkinsci.plugins.telegrambot.utils.StaplerRequestContainer;
-import jenkinsci.plugins.telegrambot.utils.Utils;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -17,6 +10,12 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import jenkins.tasks.SimpleBuildStep;
+import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
+import jenkinsci.plugins.telegrambot.users.Subscribers;
+import jenkinsci.plugins.telegrambot.users.User;
+import jenkinsci.plugins.telegrambot.users.UserApprover;
+import jenkinsci.plugins.telegrambot.utils.StaplerRequestContainer;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -32,7 +31,6 @@ import java.util.Observer;
 import java.util.Set;
 
 public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
-    private final Logger logger = Logger.getLogger(this.getClass());
 
     /**
      * The message that will be expanded and sent to users
@@ -54,12 +52,14 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher,
-                        @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
+    public void perform(
+            @Nonnull Run<?, ?> run,
+            @Nonnull FilePath filePath,
+            @Nonnull Launcher launcher,
+            @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
 
-        TelegramBotDelegate delegate = new TelegramBotDelegate();
-        delegate.setMessage(getMessage());
-        delegate.perform(run, filePath, launcher, taskListener);
+        new TelegramBotDelegate(getMessage())
+                .perform(run, filePath, launcher, taskListener);
     }
 
     @Extension
@@ -78,13 +78,13 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
             load();
             updateConfigSimpleParams();
 
-            // Set the loaded recipients map
+            // Save the loaded recipients map
             Subscribers.getInstance().setUsers(users != null ? users : new HashSet<>());
 
             // Descriptor object is observer for the Subscribers object
             Subscribers.getInstance().addObserver(this);
 
-            // Run the bot after Jenkins config have been loaded
+            // Run the bot after Jenkins config has been loaded
             TelegramBotRunner.getInstance().runBot();
         }
 
@@ -145,7 +145,7 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
         }
 
         public FormValidation doCheckMessage(@QueryParameter String value) throws IOException, ServletException {
-            return Utils.checkNonEmpty(value, "Please set a message");
+            return value.length() == 0 ? FormValidation.error("Please set a message") : FormValidation.ok();
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> clazz) {

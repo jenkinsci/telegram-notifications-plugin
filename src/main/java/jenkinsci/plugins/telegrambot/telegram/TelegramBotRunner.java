@@ -6,8 +6,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class TelegramBotRunner implements Observer {
-    private TelegramBotThread thread;
-    private static TelegramBotRunner instance = new TelegramBotRunner();
+    private static TelegramBotRunner instance;
+
+    private TelegramBotThread botThread;
+    private static final GlobalConfiguration CONFIG = GlobalConfiguration.getInstance();
 
     public synchronized static TelegramBotRunner getInstance() {
         if (instance == null) {
@@ -18,35 +20,32 @@ public class TelegramBotRunner implements Observer {
     }
 
     public void runBot() {
-        GlobalConfiguration config = GlobalConfiguration.getInstance();
-        config.addObserver(this);
+        CONFIG.addObserver(this);
 
-        if (thread != null) {
-            thread.interrupt();
+        if (botThread != null) {
+            botThread.interrupt();
         }
 
-        thread = new TelegramBotThread(config.getBotToken(), config.getBotName());
-        thread.start();
+        botThread = new TelegramBotThread(CONFIG.getBotToken(), CONFIG.getBotName());
+        botThread.start();
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        GlobalConfiguration config = GlobalConfiguration.getInstance();
+        String cfgBotToken = CONFIG.getBotToken();
+        String cfgBotName = CONFIG.getBotName();
+        String botToken = botThread.getBot().getBotToken();
+        String botName = botThread.getBot().getBotUsername();
 
-        String cfgBotToken = config.getBotToken();
-        String cfgBotName = config.getBotName();
-        String botToken = thread.getBot().getBotToken();
-        String botName = thread.getBot().getBotUsername();
-
-        // Restart bot if necessary
+        // Restart bot if token or/and name have been changed
         if (!cfgBotToken.equals(botToken) || !cfgBotName.equals(botName)) {
-            thread.interrupt();
-            thread = new TelegramBotThread(config.getBotToken(), config.getBotName());
-            thread.start();
+            botThread.interrupt();
+            botThread = new TelegramBotThread(CONFIG.getBotToken(), CONFIG.getBotName());
+            botThread.start();
         }
     }
 
-    public TelegramBotThread getThread() {
-        return thread;
+    public TelegramBotThread getBotThread() {
+        return botThread;
     }
 }

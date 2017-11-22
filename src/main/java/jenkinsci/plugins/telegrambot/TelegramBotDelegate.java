@@ -17,9 +17,13 @@ import java.io.IOException;
  * it is moved to the delegate method.
  */
 public class TelegramBotDelegate {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private static final Logger LOGGER = Logger.getLogger(TelegramBotDelegate.class);
 
     private String message;
+
+    TelegramBotDelegate(String message) {
+        this.message = message;
+    }
 
     public void perform(Run<?, ?> run, FilePath filePath, Launcher launcher, TaskListener taskListener)
             throws IOException, InterruptedException {
@@ -30,12 +34,10 @@ public class TelegramBotDelegate {
 
         try {
             Subscribers.getInstance().getApprovedUsers()
-                    .forEach(user -> {
-                        TelegramBotRunner.getInstance().getThread()
-                                .getBot().sendMessage(user.getId(), logMessage);
-                    });
+                    .forEach(user -> TelegramBotRunner.getInstance().getBotThread()
+                            .getBot().sendMessage(user.getId(), logMessage));
         } catch (Exception e) {
-            logger.error("Error while sending the message");
+            LOGGER.error("Error while sending the message");
         }
         
         if (config.shouldLogToConsole()) {

@@ -1,6 +1,5 @@
 package jenkinsci.plugins.telegrambot;
 
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -12,6 +11,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
+import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -31,14 +31,13 @@ public class TelegramBotPublisher extends Publisher implements SimpleBuildStep {
     private final boolean whenFailed;
     private final boolean whenAborted;
 
-    private TelegramBotDelegate delegate;
-
     @DataBoundConstructor
-    public TelegramBotPublisher(String message,
-                                boolean whenSuccess,
-                                boolean whenUnstable,
-                                boolean whenFailed,
-                                boolean whenAborted) {
+    public TelegramBotPublisher(
+            String message,
+            boolean whenSuccess,
+            boolean whenUnstable,
+            boolean whenFailed,
+            boolean whenAborted) {
 
         this.message = message;
         this.whenSuccess = whenSuccess;
@@ -58,25 +57,24 @@ public class TelegramBotPublisher extends Publisher implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run,
-                        @Nonnull FilePath filePath,
-                        @Nonnull Launcher launcher,
-                        @Nonnull TaskListener taskListener)
-            throws InterruptedException, IOException {
+    public void perform(
+            @Nonnull Run<?, ?> run,
+            @Nonnull FilePath filePath,
+            @Nonnull Launcher launcher,
+            @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
 
         Result result = run.getResult();
 
-        boolean success = result == Result.SUCCESS && isWhenSuccess();
-        boolean unstable = result == Result.UNSTABLE && isWhenUnstable();
-        boolean failed = result == Result.FAILURE && isWhenFailed();
-        boolean aborted = result == Result.ABORTED && isWhenAborted();
+        boolean success  = result == Result.SUCCESS  && whenSuccess;
+        boolean unstable = result == Result.UNSTABLE && whenUnstable;
+        boolean failed   = result == Result.FAILURE  && whenFailed;
+        boolean aborted  = result == Result.ABORTED  && whenAborted;
 
         boolean neededToSend = success || unstable || failed || aborted;
 
         if (neededToSend) {
-            delegate = new TelegramBotDelegate();
-            delegate.setMessage(getMessage());
-            delegate.perform(run, filePath, launcher, taskListener);
+            new TelegramBotDelegate(getMessage())
+                    .perform(run, filePath, launcher, taskListener);
         }
     }
 

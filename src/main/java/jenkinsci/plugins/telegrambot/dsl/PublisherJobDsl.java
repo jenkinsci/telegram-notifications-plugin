@@ -6,14 +6,15 @@ import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import javaposse.jobdsl.plugin.DslExtensionMethod;
 
 @Extension(optional = true)
-public class PublisherJobDsl extends ContextExtensionPoint  {
+public class PublisherJobDsl extends ContextExtensionPoint {
 
     @DslExtensionMethod(context = javaposse.jobdsl.dsl.helpers.publisher.PublisherContext.class)
     public Object telegramBot(Runnable closure) {
         PublisherContext context = new PublisherContext();
         executeInContext(closure, context);
 
-        return new TelegramBotPublisher(context.message,
+        return new TelegramBotPublisher(
+                context.message,
                 context.whenSuccess,
                 context.whenUnstable,
                 context.whenFailed,

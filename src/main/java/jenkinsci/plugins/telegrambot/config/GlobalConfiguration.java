@@ -1,20 +1,21 @@
 package jenkinsci.plugins.telegrambot.config;
 
 import jenkinsci.plugins.telegrambot.users.UserApprover;
-import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This class if user for the storing global plugin configuration.
  */
 public class GlobalConfiguration extends Observable {
-    private final Logger logger = Logger.getLogger(this.getClass());
-    private static GlobalConfiguration instance = new GlobalConfiguration();
+    private static GlobalConfiguration instance;
 
-    /**
-     * The plugin display name
-     */
     public final static String PLUGIN_DISPLAY_NAME = "TelegramBot";
 
     private Boolean shouldLogToConsole;
@@ -23,12 +24,29 @@ public class GlobalConfiguration extends Observable {
     private String usernames;
     private UserApprover.ApprovalType approvalType;
 
+    private final Map<String, String> botStrings;
+
+    private GlobalConfiguration() {
+        try {
+            Properties properties = new Properties();
+            properties.load(GlobalConfiguration.class.getClassLoader().getResourceAsStream("bot.properties"));
+            botStrings = Collections.unmodifiableMap(properties.stringPropertyNames().stream()
+                    .collect(Collectors.toMap(Function.identity(), properties::getProperty)));
+        } catch (IOException e) {
+            throw new RuntimeException("Bot properties file not found", e);
+        }
+    }
+
     public synchronized static GlobalConfiguration getInstance() {
         if (instance == null) {
             instance = new GlobalConfiguration();
         }
 
         return instance;
+    }
+
+    public Map<String, String> getBotStrings() {
+        return botStrings;
     }
 
     public Boolean shouldLogToConsole() {

@@ -1,21 +1,19 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
-import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.telegram.telegrambots.bots.commands.BotCommand;
 import org.telegram.telegrambots.logging.BotLogger;
 
-public class UnsubCommand extends BotCommand {
+public class UnsubCommand extends AbstractBotCommand {
 
     private final String LOG_TAG = "/unsub";
 
     public UnsubCommand() {
-        super("unsub", TelegramBot.getProp().getProperty("command.unsub"));
+        super("unsub", "command.unsub");
     }
 
     @Override
@@ -29,9 +27,9 @@ public class UnsubCommand extends BotCommand {
 
         if (isSubscribed) {
             subscribers.unsubscribe(id);
-            ans = TelegramBot.getProp().getProperty("message.unsub.success");
+            ans = botStrings.get("message.unsub.success");
         } else {
-            ans = TelegramBot.getProp().getProperty("message.unsub.alreadyunsub");
+            ans = botStrings.get("message.unsub.alreadyunsub");
         }
 
         SendMessage answer = new SendMessage();
