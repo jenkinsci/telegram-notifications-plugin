@@ -1,7 +1,6 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
-import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
 import org.telegram.telegrambots.TelegramApiException;
@@ -9,22 +8,20 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.AbsSender;
-import org.telegram.telegrambots.bots.commands.BotCommand;
 import org.telegram.telegrambots.logging.BotLogger;
 
-
-public class StatusCommand extends BotCommand {
+public class StatusCommand extends AbstractBotCommand {
 
     private final String LOG_TAG = "/status";
 
     public StatusCommand() {
-        super("status", TelegramBot.getProp().getProperty("command.status"));
+        super("status", "command.status");
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
         Subscribers subscribers = Subscribers.getInstance();
-        String ans;
+        String toSend;
 
         Long id = chat.getId();
 
@@ -34,19 +31,19 @@ public class StatusCommand extends BotCommand {
             boolean isApproved = subscribers.isApproved(id);
 
             if (GlobalConfiguration.getInstance().getApprovalType() == UserApprover.ApprovalType.ALL) {
-                ans = TelegramBot.getProp().getProperty("message.status.approved");
+                toSend = botStrings.get("message.status.approved");
             } else {
-                ans = isApproved
-                        ? TelegramBot.getProp().getProperty("message.status.approved")
-                        : TelegramBot.getProp().getProperty("message.status.unapproved");
+                toSend = isApproved
+                        ? botStrings.get("message.status.approved")
+                        : botStrings.get("message.status.unapproved");
             }
         } else {
-            ans = TelegramBot.getProp().getProperty("message.status.unsubscribed");
+            toSend = botStrings.get("message.status.unsubscribed");
         }
 
         SendMessage answer = new SendMessage();
         answer.setChatId(chat.getId().toString());
-        answer.setText(ans);
+        answer.setText(toSend);
 
         try {
             absSender.sendMessage(answer);
