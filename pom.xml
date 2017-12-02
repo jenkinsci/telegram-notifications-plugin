@@ -33,7 +33,7 @@
 
     <name>Telegram Bot Plugin</name>
     <description>This plugin allows you to send messages from Jenkins jobs to Telegram chat.</description>
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/TelegramBotPlugin</url>
+    <url>https://wiki.jenkins.io/display/JENKINS/Telegram+Notification+Plugin</url>
 
     <licenses>
         <license>
