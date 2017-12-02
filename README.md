@@ -8,11 +8,11 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
  
 #### Installation
 1. Download latest release 
-2. [Manually install](https://wiki.jenkins-ci.org/display/JENKINS/Plugins#P..) *.hpi* plugin to your jenkins
+2. [Manually install](https://jenkins.io/doc/book/managing/plugins/#advanced-installation) *.hpi* plugin to your jenkins
 
 #### Basic usage
 ##### Create bot
-1. Find BotFather in Telegram (*@BotFather*)
+1. Find BotFather in Telegram ([@BotFather](https://t.me/@BotFather))
 2. Send */newbot* command 
 3. Enter bot name and bot username
 
