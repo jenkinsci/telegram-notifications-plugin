@@ -1,4 +1,4 @@
-# TeleJenkins
+# TeleJenkins [![Build Status](https://ci.jenkins.io/job/Plugins/job/telegram-notifications-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/telegram-notifications-plugin/job/master/)
 
 ![TeleJenkins Japan Style](https://pp.vk.me/c636926/v636926471/193d1/fARBefBcfzs.jpg)
 
