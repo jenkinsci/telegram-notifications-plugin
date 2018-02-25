@@ -1,9 +1,9 @@
 package jenkinsci.plugins.telegrambot.telegram;
 
 import org.apache.log4j.Logger;
-import org.telegram.telegrambots.TelegramApiException;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.generics.BotSession;
 import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.BotSession;
 
 public class TelegramBotThread extends Thread {
     private static final Logger LOGGER = Logger.getLogger(TelegramBotThread.class);
