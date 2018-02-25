@@ -12,7 +12,6 @@
         <junit.version>4.12</junit.version>
         <jacoco.version>0.7.4.201502262128</jacoco.version>
         <telegrambots.version>3.6</telegrambots.version>
-        <log4j.version>1.2.17</log4j.version>
         <job-dsl.version>1.48</job-dsl.version>
         <log4j.configuration>log4j.properties</log4j.configuration>
         <findbugs.failOnError>false</findbugs.failOnError>
@@ -77,11 +76,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
