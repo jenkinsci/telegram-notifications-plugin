@@ -120,6 +120,9 @@
                 <configuration>
                     <source>${source.level}</source>
                     <target>${target.level}</target>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
