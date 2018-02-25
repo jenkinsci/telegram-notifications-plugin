@@ -38,7 +38,7 @@ public class SubCommand extends AbstractBotCommand {
         answer.setText(ans);
 
         try {
-            absSender.sendMessage(answer);
+            absSender.execute(answer);
         } catch (TelegramApiException e) {
             BotLogger.error(LOG_TAG, e);
         }

@@ -22,7 +22,7 @@ public class HelpCommand extends AbstractBotCommand {
         answer.setText(botStrings.get("message.help"));
 
         try {
-            absSender.sendMessage(answer);
+            absSender.execute(answer);
         } catch (TelegramApiException e) {
             BotLogger.error(LOG_TAG, e);
         }

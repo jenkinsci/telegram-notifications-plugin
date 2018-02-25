@@ -46,7 +46,7 @@ public class StatusCommand extends AbstractBotCommand {
         answer.setText(toSend);
 
         try {
-            absSender.sendMessage(answer);
+            absSender.execute(answer);
         } catch (TelegramApiException e) {
             BotLogger.error(LOG_TAG, e);
         }

@@ -32,7 +32,7 @@ public class TelegramBotThread extends Thread {
             while (true) {
                 if (isInterrupted()) {
                     // If thread was interrupted bot session should be closed
-                    session.close();
+                    session.stop();
                     LOGGER.info("BotSession was closed");
                     break;
                 }
