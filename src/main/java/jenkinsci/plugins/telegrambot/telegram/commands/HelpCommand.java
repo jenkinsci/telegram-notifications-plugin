@@ -9,7 +9,7 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public class HelpCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/help";
+    private static final String LOG_TAG = "/help";
 
     public HelpCommand() {
         super("help", "command.help");

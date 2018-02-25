@@ -9,7 +9,7 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public class StartCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/start";
+    private static final String LOG_TAG = "/start";
 
     public StartCommand() {
         super("start", "command.start");

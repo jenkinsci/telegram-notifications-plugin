@@ -12,7 +12,7 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public class StatusCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/status";
+    private static final String LOG_TAG = "/status";
 
     public StatusCommand() {
         super("status", "command.status");

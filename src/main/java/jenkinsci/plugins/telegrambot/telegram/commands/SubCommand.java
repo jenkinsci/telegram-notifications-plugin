@@ -10,7 +10,7 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public class SubCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/sub";
+    private static final String LOG_TAG = "/sub";
 
     public SubCommand() {
         super("sub", "command.sub");

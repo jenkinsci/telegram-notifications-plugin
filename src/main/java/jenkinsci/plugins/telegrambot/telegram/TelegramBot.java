@@ -38,7 +38,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         try {
             sendMessage(sendMessageRequest);
         } catch (TelegramApiException e) {
-            LOGGER.error(String.format("TelegramBot: Error while sending message: %s\n%s", chatId, message));
+            LOGGER.error(String.format("TelegramBot: Error while sending message: %s%n%s", chatId, message));
         }
     }
 

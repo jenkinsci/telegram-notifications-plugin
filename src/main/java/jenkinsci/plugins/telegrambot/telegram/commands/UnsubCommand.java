@@ -10,7 +10,7 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 public class UnsubCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/unsub";
+    private static final String LOG_TAG = "/unsub";
 
     public UnsubCommand() {
         super("unsub", "command.unsub");
