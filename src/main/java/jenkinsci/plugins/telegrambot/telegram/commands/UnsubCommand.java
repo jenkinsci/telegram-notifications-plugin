@@ -1,16 +1,16 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
 import jenkinsci.plugins.telegrambot.users.Subscribers;
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.AbsSender;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.logging.BotLogger;
 
 public class UnsubCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/unsub";
+    private static final String LOG_TAG = "/unsub";
 
     public UnsubCommand() {
         super("unsub", "command.unsub");
@@ -37,7 +37,7 @@ public class UnsubCommand extends AbstractBotCommand {
         answer.setText(ans);
 
         try {
-            absSender.sendMessage(answer);
+            absSender.execute(answer);
         } catch (TelegramApiException e) {
             BotLogger.error(LOG_TAG, e);
         }

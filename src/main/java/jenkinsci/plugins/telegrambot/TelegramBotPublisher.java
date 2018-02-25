@@ -10,6 +10,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
+import hudson.tasks.Notifier;
 import jenkins.tasks.SimpleBuildStep;
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import net.sf.json.JSONObject;
@@ -19,7 +20,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class TelegramBotPublisher extends Publisher implements SimpleBuildStep {
+public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
 
     /**
      * The message that will be expanded and sent to users
@@ -52,8 +53,8 @@ public class TelegramBotPublisher extends Publisher implements SimpleBuildStep {
     }
 
     @Override
-    public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl) super.getDescriptor();
+    public BuildStepDescriptor getDescriptor() {
+        return (BuildStepDescriptor)super.getDescriptor();
     }
 
     @Override

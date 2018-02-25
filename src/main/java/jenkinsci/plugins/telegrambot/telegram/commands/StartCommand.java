@@ -1,15 +1,15 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
-import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
 import org.telegram.telegrambots.bots.AbsSender;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.logging.BotLogger;
 
 public class StartCommand extends AbstractBotCommand {
 
-    private final String LOG_TAG = "/start";
+    private static final String LOG_TAG = "/start";
 
     public StartCommand() {
         super("start", "command.start");
@@ -22,7 +22,7 @@ public class StartCommand extends AbstractBotCommand {
         answer.setText(botStrings.get("message.help"));
 
         try {
-            absSender.sendMessage(answer);
+            absSender.execute(answer);
         } catch (TelegramApiException e) {
             BotLogger.error(LOG_TAG, e);
         }
