@@ -104,7 +104,7 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
             this.botName = formData.getString("botName");
 
             // Approve users
-            UserApprover userApprover = new UserApprover(users);
+            UserApprover userApprover = new UserApprover(users != null ? users : new HashSet<>());
             approvalType = userApprover.approve(formData);
             users = userApprover.getUsers();
 
