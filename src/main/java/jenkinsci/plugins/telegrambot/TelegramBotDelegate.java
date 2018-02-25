@@ -7,7 +7,8 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ import java.io.IOException;
  * it is moved to the delegate method.
  */
 public class TelegramBotDelegate {
-    private static final Logger LOGGER = Logger.getLogger(TelegramBotDelegate.class);
+    private static final Logger LOGGER = Logger.getLogger(TelegramBotDelegate.class.getName());
 
     private String message;
 
@@ -37,7 +38,7 @@ public class TelegramBotDelegate {
                     .forEach(user -> TelegramBotRunner.getInstance().getBotThread()
                             .getBot().sendMessage(user.getId(), logMessage));
         } catch (Exception e) {
-            LOGGER.error("Error while sending the message");
+            LOGGER.log(Level.SEVERE, "Error while sending the message", e);
         }
         
         if (config.shouldLogToConsole()) {

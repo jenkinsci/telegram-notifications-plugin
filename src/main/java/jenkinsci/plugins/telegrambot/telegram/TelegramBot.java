@@ -2,16 +2,17 @@ package jenkinsci.plugins.telegrambot.telegram;
 
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.commands.*;
-import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class TelegramBot extends TelegramLongPollingCommandBot {
-    private final static Logger LOGGER = Logger.getLogger(TelegramBot.class);
+    private final static Logger LOGGER = Logger.getLogger(TelegramBot.class.getName());
 
     private final String token;
 
@@ -38,7 +39,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         try {
             execute(sendMessageRequest);
         } catch (TelegramApiException e) {
-            LOGGER.error(String.format("TelegramBot: Error while sending message: %s%n%s", chatId, message));
+            LOGGER.log(Level.SEVERE, String.format("TelegramBot: Error while sending message: %s%n%s", chatId, message), e);
         }
     }
 
