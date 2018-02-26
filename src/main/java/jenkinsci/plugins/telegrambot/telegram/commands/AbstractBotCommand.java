@@ -1,7 +1,7 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
-import org.telegram.telegrambots.bots.commands.BotCommand;
+import org.telegram.telegrambots.bots.commandbot.commands.BotCommand;
 
 import java.util.Map;
 

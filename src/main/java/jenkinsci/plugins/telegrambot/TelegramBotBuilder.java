@@ -17,7 +17,6 @@ import jenkinsci.plugins.telegrambot.users.User;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
 import jenkinsci.plugins.telegrambot.utils.StaplerRequestContainer;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -26,6 +25,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -103,7 +104,7 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
             this.botName = formData.getString("botName");
 
             // Approve users
-            UserApprover userApprover = new UserApprover(users);
+            UserApprover userApprover = new UserApprover(users != null ? users : new HashSet<>());
             approvalType = userApprover.approve(formData);
             users = userApprover.getUsers();
 
@@ -128,7 +129,7 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
                 save();
                 super.configure(StaplerRequestContainer.req, new JSONObject());
             } catch (FormException e) {
-                Logger.getLogger(this.getClass()).error("Error while saving the recipients map");
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error while saving the recipients map", e);
             }
         }
 

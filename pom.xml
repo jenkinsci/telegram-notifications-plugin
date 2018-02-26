@@ -11,8 +11,7 @@
         <target.level>1.8</target.level>
         <junit.version>4.12</junit.version>
         <jacoco.version>0.7.4.201502262128</jacoco.version>
-        <telegrambots.version>v2.3.3.4</telegrambots.version>
-        <log4j.version>1.2.17</log4j.version>
+        <telegrambots.version>3.6</telegrambots.version>
         <job-dsl.version>1.48</job-dsl.version>
         <log4j.configuration>log4j.properties</log4j.configuration>
         <findbugs.failOnError>false</findbugs.failOnError>
@@ -27,7 +26,7 @@
     </parent>
 
     <artifactId>telegram-notifications</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Telegram Bot Plugin</name>
@@ -79,13 +78,18 @@
             <version>${junit.version}</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegrambots.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rubenlagus</groupId>
-            <artifactId>TelegramBots</artifactId>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-meta</artifactId>
+            <version>${telegrambots.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambotsextensions</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
         <dependency>
@@ -110,6 +114,9 @@
                 <configuration>
                     <source>${source.level}</source>
                     <target>${target.level}</target>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
