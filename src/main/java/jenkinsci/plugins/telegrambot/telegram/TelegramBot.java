@@ -46,10 +46,14 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         super(name);
         this.token = token;
 
-        HttpHost proxy = getProxy();
-        httpclient = getHttpClient(proxy);
-        requestConfig = getRequestConfig(proxy);
-        getOptions().setRequestConfig(requestConfig);
+        try {
+            HttpHost proxy = getProxy();
+            httpclient = getHttpClient(proxy);
+            requestConfig = getRequestConfig(proxy);
+            getOptions().setRequestConfig(requestConfig);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "TelegramBot: Failed to set proxy", e);
+        }
 
         Stream.of(
                 new StartCommand(),
@@ -60,18 +64,18 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         ).forEach(this::register);
     }
 
-    private final HttpHost getProxy() {
-        try {
-            ProxyConfiguration proxyConfig = ProxyConfiguration.load();
+    private HttpHost getProxy() throws IOException {
+        ProxyConfiguration proxyConfig = ProxyConfiguration.load();
+        if (proxyConfig != null) {
             LOGGER.fine(String.format("Proxy settings: %s:%d", proxyConfig.name, proxyConfig.port));
             return new HttpHost(proxyConfig.name, proxyConfig.port);
-        } catch (IOException e) {
-            LOGGER.log(Level.FINE, "No proxy settings in Jenkins", e);
+        } else {
+            LOGGER.log(Level.FINE, "No proxy settings in Jenkins");
             return null;
         }
     }
 
-    private final CloseableHttpClient getHttpClient(HttpHost proxy) {
+    private CloseableHttpClient getHttpClient(HttpHost proxy) {
         HttpClientBuilder builder = HttpClientBuilder.create()
                 .setSSLHostnameVerifier(new NoopHostnameVerifier())
                 .setConnectionTimeToLive(70, TimeUnit.SECONDS)
@@ -83,7 +87,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         return builder.build();
     }
 
-    private final RequestConfig getRequestConfig(HttpHost proxy) {
+    private RequestConfig getRequestConfig(HttpHost proxy) {
         RequestConfig botRequestConfig = getOptions().getRequestConfig();
         if (botRequestConfig == null) {
             botRequestConfig = RequestConfig.custom()
