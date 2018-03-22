@@ -41,7 +41,7 @@ public class TelegramBotDelegate {
         GlobalConfiguration config = GlobalConfiguration.getInstance();
 
         try {
-            String finalLogMessage = logMessage.substring(0, Math.min(logMessage.length(), 1024));
+            String finalLogMessage = logMessage;
             Subscribers.getInstance().getApprovedUsers()
                     .forEach(user -> TelegramBotRunner.getInstance().getBotThread()
                             .getBot().sendMessage(user.getId(), finalLogMessage));
