@@ -118,10 +118,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     }
 
     @Override
-    public void processNonCommandUpdate(Update update) {
-        Long chatId = update.getMessage().getChatId();
-        sendMessage(chatId, GlobalConfiguration.getInstance().getBotStrings().get("message.noncommand"));
-    }
+    public void processNonCommandUpdate(Update update) {}
 
     @Override
     public String getBotToken() {
