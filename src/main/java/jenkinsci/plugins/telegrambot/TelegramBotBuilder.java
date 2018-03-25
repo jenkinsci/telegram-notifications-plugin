@@ -59,8 +59,8 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
             @Nonnull Launcher launcher,
             @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
 
-        new TelegramBotDelegate(getMessage())
-                .perform(run, filePath, launcher, taskListener);
+        TelegramBotRunner.getInstance().getBot()
+                .sendMessage(getMessage(), run, filePath, taskListener);
     }
 
     @Extension

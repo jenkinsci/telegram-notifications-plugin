@@ -1,9 +1,14 @@
 package jenkinsci.plugins.telegrambot.telegram;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.ProxyConfiguration;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.commands.*;
+import jenkinsci.plugins.telegrambot.users.Subscribers;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -17,6 +22,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.util.EntityUtils;
+import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -26,6 +33,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiValidationException;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -35,7 +43,8 @@ import java.nio.charset.StandardCharsets;
 import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
 
 public class TelegramBot extends TelegramLongPollingCommandBot {
-    private final static Logger LOGGER = Logger.getLogger(TelegramBot.class.getName());
+    private static final Logger LOG = Logger.getLogger(TelegramBot.class.getName());
+    private static final GlobalConfiguration CONFIG = GlobalConfiguration.getInstance();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String token;
@@ -46,16 +55,9 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         super(name);
         this.token = token;
 
-        try {
-            HttpHost proxy = getProxy();
-            httpclient = getHttpClient(proxy);
-            requestConfig = getRequestConfig(proxy);
-            getOptions().setRequestConfig(requestConfig);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "TelegramBot: Failed to set proxy", e);
-        }
+        initializeProxy();
 
-        Stream.of(
+        Arrays.asList(
                 new StartCommand(),
                 new HelpCommand(),
                 new SubCommand(),
@@ -64,13 +66,97 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         ).forEach(this::register);
     }
 
+    public void sendMessage(Long chatId, String message) {
+        SendMessage sendMessageRequest = new SendMessage();
+
+        sendMessageRequest.setChatId(chatId.toString());
+        sendMessageRequest.setText(message);
+        sendMessageRequest.enableMarkdown(true);
+
+        try {
+            execute(sendMessageRequest);
+        } catch (TelegramApiException e) {
+            LOG.log(Level.SEVERE, String.format(
+                    "TelegramBot: Error while sending message: %s%n%s", chatId, message), e);
+        }
+    }
+
+    public void sendMessage(
+            String message, Run<?, ?> run, FilePath filePath, TaskListener taskListener)
+            throws IOException, InterruptedException {
+
+        String logMessage = message;
+        try {
+            logMessage = TokenMacro.expandAll(run, filePath, taskListener, message);
+        } catch (MacroEvaluationException e) {
+            LOG.log(Level.SEVERE, "Error while expanding the message", e);
+        }
+
+        try {
+            final String finalLogMessage = logMessage;
+
+            Subscribers.getInstance().getApprovedUsers()
+                    .forEach(user -> this.sendMessage(user.getId(), finalLogMessage));
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while sending the message", e);
+        }
+
+        if (CONFIG.shouldLogToConsole()) {
+            taskListener.getLogger().println(logMessage);
+        }
+    }
+
+    @Override
+    public void processNonCommandUpdate(Update update) {
+        LOG.log(Level.WARNING, "Non-command update: " + update.getMessage());
+        // TODO: improve this handling
+    }
+
+    @Override
+    public String getBotToken() {
+        return token;
+    }
+
+    @Override
+    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(
+            Method method) throws TelegramApiException {
+        if (method == null) {
+            throw new TelegramApiException("Parameter method can not be null");
+        }
+        return sendApiMethodWithProxy(method);
+    }
+
+    private HttpPost configuredHttpPost(String url) {
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(requestConfig);
+        return httpPost;
+    }
+
+    @Override
+    public String toString() {
+        return "TelegramBot{" + token + "}";
+    }
+
+    private void initializeProxy() {
+        try {
+            HttpHost proxy = getProxy();
+            httpclient = getHttpClient(proxy);
+            requestConfig = getRequestConfig(proxy);
+            getOptions().setRequestConfig(requestConfig);
+            LOG.log(Level.INFO, "Proxy successfully initialized");
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "TelegramBot: Failed to set proxy", e);
+        }
+    }
+
     private HttpHost getProxy() throws IOException {
         ProxyConfiguration proxyConfig = ProxyConfiguration.load();
         if (proxyConfig != null) {
-            LOGGER.fine(String.format("Proxy settings: %s:%d", proxyConfig.name, proxyConfig.port));
+            LOG.log(Level.FINE, String.format("Proxy settings: %s:%d", proxyConfig.name, proxyConfig.port));
             return new HttpHost(proxyConfig.name, proxyConfig.port);
         } else {
-            LOGGER.log(Level.FINE, "No proxy settings in Jenkins");
+            LOG.log(Level.FINE, "No proxy settings in Jenkins");
             return null;
         }
     }
@@ -103,51 +189,25 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         return builder.build();
     }
 
-    public void sendMessage(Long chatId, String message) {
-        SendMessage sendMessageRequest = new SendMessage();
-
-        sendMessageRequest.setChatId(chatId.toString());
-        sendMessageRequest.setText(message);
-        sendMessageRequest.enableMarkdown(true);
-
-        try {
-            execute(sendMessageRequest);
-        } catch (TelegramApiException e) {
-            LOGGER.log(Level.SEVERE, String.format("TelegramBot: Error while sending message: %s%n%s", chatId, message), e);
-        }
-    }
-
-    @Override
-    public void processNonCommandUpdate(Update update) {}
-
-    @Override
-    public String getBotToken() {
-        return token;
-    }
-
-    @Override
-    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) throws TelegramApiException {
-        if (method == null) {
-            throw new TelegramApiException("Parameter method can not be null");
-        }
-        return sendApiMethodWithProxy(method);
-    }
-
-    protected final <T extends Serializable, Method extends BotApiMethod<T>> T sendApiMethodWithProxy(Method method) throws TelegramApiException {
+    private <T extends Serializable, Method extends BotApiMethod<T>> T sendApiMethodWithProxy(
+            Method method) throws TelegramApiException {
         try {
             String responseContent = sendMethodRequest(method);
             return method.deserializeResponse(responseContent);
         } catch (IOException e) {
-            throw new TelegramApiException(String.format("Unable to execute %s method", method.getMethod()), e);
+            throw new TelegramApiException(
+                    String.format("Unable to execute %s method", method.getMethod()), e);
         }
     }
 
-    private <T extends Serializable, Method extends BotApiMethod<T>> String sendMethodRequest(Method method) throws TelegramApiValidationException, IOException {
+    private <T extends Serializable, Method extends BotApiMethod<T>> String sendMethodRequest(
+            Method method) throws TelegramApiValidationException, IOException {
         method.validate();
         String url = getBaseUrl() + method.getMethod();
         HttpPost httpPost = configuredHttpPost(url);
         httpPost.addHeader("charset", StandardCharsets.UTF_8.name());
-        httpPost.setEntity(new StringEntity(objectMapper.writeValueAsString(method), ContentType.APPLICATION_JSON));
+        httpPost.setEntity(new StringEntity(
+                objectMapper.writeValueAsString(method), ContentType.APPLICATION_JSON));
         return sendHttpPostRequest(httpPost);
     }
 
@@ -157,16 +217,5 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
             BufferedHttpEntity bufferedHttpEntity = new BufferedHttpEntity(httpEntity);
             return EntityUtils.toString(bufferedHttpEntity, StandardCharsets.UTF_8);
         }
-    }
-
-    private HttpPost configuredHttpPost(String url) {
-        HttpPost httpPost = new HttpPost(url);
-        httpPost.setConfig(requestConfig);
-        return httpPost;
-    }
-
-    @Override
-    public String toString() {
-        return "TelegramBot{" + token + "}";
     }
 }
