@@ -1,5 +1,6 @@
 package jenkinsci.plugins.telegrambot;
 
+import jenkinsci.plugins.telegrambot.component.*;
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
@@ -29,7 +30,12 @@ public class TelegramBotDelegate {
     public void perform(Run<?, ?> run, FilePath filePath, Launcher launcher, TaskListener taskListener)
             throws IOException, InterruptedException {
 
-        String logMessage = run.getEnvironment(taskListener).expand(message);
+        MiddlewareController middlewareController = new DefaultMiddlewareController();
+        middlewareController
+                .linkWith(new NativeJenkinsMiddleware(run.getEnvironment(taskListener)))
+                .linkWith(new KeyPhraseMiddleware("READ_FROM_FILE"));
+
+        String logMessage = new ExtensionMessageTransformer(middlewareController).transform(message);
 
         GlobalConfiguration config = GlobalConfiguration.getInstance();
 

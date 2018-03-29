@@ -28,5 +28,5 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
 
 ##### Manage your job
 1. Add build-step (or post build-step)
-2. Fill the message (you can use environment variables and simple Markdown)
+2. Fill the message (you can use environment variables, simple Markdown and ${READ_FROM_FILE, $WORKSPACE/path/to/file})
 3. Save your job

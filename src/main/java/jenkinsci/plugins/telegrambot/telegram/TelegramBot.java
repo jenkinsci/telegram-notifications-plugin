@@ -65,7 +65,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
             ProxyConfiguration proxyConfig = ProxyConfiguration.load();
             LOGGER.fine(String.format("Proxy settings: %s:%d", proxyConfig.name, proxyConfig.port));
             return new HttpHost(proxyConfig.name, proxyConfig.port);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             LOGGER.log(Level.FINE, "No proxy settings in Jenkins", e);
             return null;
         }
