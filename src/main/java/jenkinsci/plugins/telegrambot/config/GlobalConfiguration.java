@@ -3,10 +3,7 @@ package jenkinsci.plugins.telegrambot.config;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -62,11 +59,13 @@ public class GlobalConfiguration extends Observable {
     }
 
     public void setBotToken(String botToken) {
-        this.botToken = botToken;
+        if (!Objects.equals(this.botToken, botToken)) {
+            this.botToken = botToken;
 
-        // If token changed, Telegram Bot must be restarted
-        setChanged();
-        notifyObservers();
+            // If token changed, Telegram Bot must be restarted
+            setChanged();
+            notifyObservers();
+        }
     }
 
     public String getBotName() {
@@ -74,11 +73,13 @@ public class GlobalConfiguration extends Observable {
     }
 
     public void setBotName(String botName) {
-        this.botName = botName;
+        if (!Objects.equals(this.botName, botName)) {
+            this.botName = botName;
 
-        // If bot name changed, Telegram Bot must be restarted
-        setChanged();
-        notifyObservers();
+            // If bot name changed, Telegram Bot must be restarted
+            setChanged();
+            notifyObservers();
+        }
     }
 
     public String getUsernames() {

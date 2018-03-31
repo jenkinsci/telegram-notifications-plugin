@@ -2,26 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <jenkins.version>2.7</jenkins.version>
-        <java.level>8</java.level>
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-        <source.level>1.8</source.level>
-        <target.level>1.8</target.level>
-        <junit.version>4.12</junit.version>
-        <jacoco.version>0.7.4.201502262128</jacoco.version>
-        <telegrambots.version>3.6</telegrambots.version>
-        <job-dsl.version>1.48</job-dsl.version>
-        <log4j.configuration>log4j.properties</log4j.configuration>
-        <findbugs.failOnError>false</findbugs.failOnError>
-        <maven-hpi-plugin.disabledTestInjection>true</maven-hpi-plugin.disabledTestInjection>
-    </properties>
-
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.11</version>
+        <version>3.4</version>
         <relativePath />
     </parent>
 
@@ -30,8 +14,33 @@
     <packaging>hpi</packaging>
 
     <name>Telegram Bot Plugin</name>
-    <description>This plugin allows you to send messages from Jenkins jobs to Telegram chat.</description>
+    <description>This plugin allows you to send messages from Jenkins jobs to Telegram chats</description>
     <url>https://wiki.jenkins.io/display/JENKINS/Telegram+Notification+Plugin</url>
+
+    <properties>
+
+        <!--Versions-->
+
+        <java.level>8</java.level>
+        <jenkins.version>2.7</jenkins.version>
+
+        <!--Maven plugins-->
+        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <jacoco.version>0.7.4.201502262128</jacoco.version>
+
+        <!--Libraries-->
+        <telegrambots.version>3.6</telegrambots.version>
+        <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
+        <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
+        <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
+
+        <!--Properties-->
+
+        <findbugs.failOnError>false</findbugs.failOnError>
+        <maven-hpi-plugin.disabledTestInjection>true</maven-hpi-plugin.disabledTestInjection>
+
+    </properties>
 
     <scm>
         <connection>scm:git:https://github.com/jenkinsci/telegram-notifications-plugin.git</connection>
@@ -72,11 +81,8 @@
     </pluginRepositories>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-        </dependency>
+
+        <!--Telegram Bot related dependencies-->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
@@ -92,16 +98,23 @@
             <artifactId>telegrambotsextensions</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
+
+        <!--Jenkins plugin related dependencies-->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>job-dsl</artifactId>
-            <version>${job-dsl.version}</version>
+            <version>${jenkins.plugins.job-dsl.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>2.3</version>
+            <version>${jenkins.plugins.token-macro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <version>${jenkins.plugins.structs.version}</version>
         </dependency>
     </dependencies>
 
@@ -117,8 +130,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${source.level}</source>
-                    <target>${target.level}</target>
+                    <source>${java.level}</source>
+                    <target>${java.level}</target>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
                     </compilerArgs>

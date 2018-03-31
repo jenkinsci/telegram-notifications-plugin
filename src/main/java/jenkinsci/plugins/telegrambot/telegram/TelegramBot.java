@@ -2,7 +2,6 @@ package jenkinsci.plugins.telegrambot.telegram;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -26,6 +25,8 @@ import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Chat;
+import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -36,7 +37,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import java.util.concurrent.TimeUnit;
 import java.nio.charset.StandardCharsets;
 
@@ -44,12 +44,15 @@ import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
 
 public class TelegramBot extends TelegramLongPollingCommandBot {
     private static final Logger LOG = Logger.getLogger(TelegramBot.class.getName());
+
     private static final GlobalConfiguration CONFIG = GlobalConfiguration.getInstance();
+    private static final Subscribers SUBSCRIBERS = Subscribers.getInstance();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String token;
     private volatile CloseableHttpClient httpclient;
     private volatile RequestConfig requestConfig;
+
 
     public TelegramBot(String token, String name) {
         super(name);
@@ -67,7 +70,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     }
 
     public void sendMessage(Long chatId, String message) {
-        SendMessage sendMessageRequest = new SendMessage();
+        final SendMessage sendMessageRequest = new SendMessage();
 
         sendMessageRequest.setChatId(chatId.toString());
         sendMessageRequest.setText(message);
@@ -95,22 +98,47 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         try {
             final String finalLogMessage = logMessage;
 
-            Subscribers.getInstance().getApprovedUsers()
+            SUBSCRIBERS.getApprovedUsers()
                     .forEach(user -> this.sendMessage(user.getId(), finalLogMessage));
 
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error while sending the message", e);
         }
 
-        if (CONFIG.shouldLogToConsole()) {
-            taskListener.getLogger().println(logMessage);
-        }
+        if (CONFIG.shouldLogToConsole()) taskListener.getLogger().println(logMessage);
     }
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        LOG.log(Level.WARNING, "Non-command update: " + update.getMessage());
-        // TODO: improve this handling
+        if (update == null) {
+            LOG.log(Level.WARNING, "Update is null");
+            return;
+        }
+
+        final String nonCommandMessage = CONFIG.getBotStrings()
+                .get("message.noncommand");
+
+        final Message message = update.getMessage();
+        final Chat chat = message.getChat();
+
+        if (chat.isUserChat()) {
+            sendMessage(chat.getId(), nonCommandMessage);
+            return;
+        }
+
+        final String text = message.getText();
+
+        try {
+            // Skip not direct messages in chats
+            if (text.length() < 1 || text.charAt(0) != '@') return;
+            final String[] tmp = text.split(" ");
+            if (tmp.length < 2 || !CONFIG.getBotName().equals(tmp[0].substring(1, tmp[0].length()))) return;
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Something bad happened while message processing", e);
+            return;
+        }
+
+        sendMessage(chat.getId(), nonCommandMessage);
     }
 
     @Override
@@ -119,11 +147,9 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     }
 
     @Override
-    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(
-            Method method) throws TelegramApiException {
-        if (method == null) {
-            throw new TelegramApiException("Parameter method can not be null");
-        }
+    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method)
+            throws TelegramApiException {
+        if (method == null) throw new TelegramApiException("Parameter method can not be null");
         return sendApiMethodWithProxy(method);
     }
 
