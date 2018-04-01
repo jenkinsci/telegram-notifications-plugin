@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>telegram-notifications</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Telegram Bot Plugin</name>
@@ -46,7 +46,7 @@
         <connection>scm:git:https://github.com/jenkinsci/telegram-notifications-plugin.git</connection>
         <developerConnection>scm:git:https://github.com/jenkinsci/telegram-notifications-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/telegram-notifications-plugin</url>
-        <tag>telegram-notifications-1.2.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
