@@ -98,8 +98,7 @@ public class UserApprover {
         }
 
         if (oldStatus != user.isApproved()) {
-            TelegramBotRunner.getInstance().getBotThread()
-                    .getBot().sendMessage(user.getId(), message);
+            TelegramBotRunner.getInstance().getBot().sendMessage(user.getId(), message);
         }
     }
 

@@ -13,6 +13,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Notifier;
 import jenkins.tasks.SimpleBuildStep;
 import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -54,7 +55,7 @@ public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
 
     @Override
     public BuildStepDescriptor getDescriptor() {
-        return (BuildStepDescriptor)super.getDescriptor();
+        return super.getDescriptor();
     }
 
     @Override
@@ -74,8 +75,8 @@ public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
         boolean neededToSend = success || unstable || failed || aborted;
 
         if (neededToSend) {
-            new TelegramBotDelegate(getMessage())
-                    .perform(run, filePath, launcher, taskListener);
+            TelegramBotRunner.getInstance().getBot()
+                    .sendMessage(getMessage(), run, filePath, taskListener);
         }
     }
 
