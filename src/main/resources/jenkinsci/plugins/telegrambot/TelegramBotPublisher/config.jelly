@@ -1,26 +1,30 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
     <f:entry title="Message" field="message">
         <f:textarea/>
     </f:entry>
 
-    <f:entry title="Send when">
-        <table>
-            <f:entry>
-                <f:checkbox title="Success" field="whenSuccess"/>
-            </f:entry>
+    <f:advanced>
+        <f:entry title="Send when">
+            <table>
+                <f:entry>
+                    <f:checkbox title="Success" field="whenSuccess" default="true" />
+                </f:entry>
 
-            <f:entry>
-                <f:checkbox title="Unstable" field="whenUnstable"/>
-            </f:entry>
+                <f:entry>
+                    <f:checkbox title="Unstable" field="whenUnstable" default="true" />
+                </f:entry>
 
-            <f:entry>
-                <f:checkbox title="Failed" field="whenFailed"/>
-            </f:entry>
+                <f:entry>
+                    <f:checkbox title="Failed" field="whenFailed" default="true" />
+                </f:entry>
 
-            <f:entry>
-                <f:checkbox title="Aborted" field="whenAborted"/>
-            </f:entry>
-        </table>
-    </f:entry>
+                <f:entry>
+                    <f:checkbox title="Aborted" field="whenAborted" default="true" />
+                </f:entry>
+            </table>
+        </f:entry>
+    </f:advanced>
+
 </j:jelly>
