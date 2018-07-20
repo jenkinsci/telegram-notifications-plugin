@@ -7,9 +7,11 @@ import hudson.model.AbstractProject;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.tasks.*;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Notifier;
+import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -53,7 +55,7 @@ public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
         @Nonnull
         @Override
         public String getDisplayName() {
-            return GlobalConfiguration.PLUGIN_DISPLAY_NAME;
+            return TelegramBotGlobalConfiguration.PLUGIN_DISPLAY_NAME;
         }
     }
 

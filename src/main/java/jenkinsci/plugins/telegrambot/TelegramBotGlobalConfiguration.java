@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.User;
@@ -17,21 +18,24 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.logging.Level;
+import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class if user for the storing global plugin configuration.
  */
 @Extension
-public class TelegramBotGlobalConfiguration extends GlobalConfiguration implements Observer {
+public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
+
+    final static String PLUGIN_DISPLAY_NAME = "TelegramBot";
+    private final Map<String, String> botStrings;
+
     private Boolean shouldLogToConsole;
     private String botToken;
     private String botName;
+    private String usernames;
     private UserApprover.ApprovalType approvalType;
     private Set<User> users;
 
@@ -40,18 +44,22 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration implemen
      */
     @DataBoundConstructor
     public TelegramBotGlobalConfiguration() {
+        try {
+            Properties properties = new Properties();
+            properties.load(TelegramBotGlobalConfiguration.class.getClassLoader().getResourceAsStream("bot.properties"));
+            botStrings = Collections.unmodifiableMap(properties.stringPropertyNames().stream()
+                    .collect(Collectors.toMap(Function.identity(), properties::getProperty)));
+        } catch (IOException e) {
+            throw new RuntimeException("Bot properties file not found", e);
+        }
         // Load global Jenkins config
         load();
-        updateConfigSimpleParams();
 
         // Save the loaded recipients map
         Subscribers.getInstance().setUsers(users != null ? users : new HashSet<>());
 
-        // Descriptor object is observer for the Subscribers object
-        Subscribers.getInstance().addObserver(this);
-
         // Run the bot after Jenkins config has been loaded
-        TelegramBotRunner.getInstance().runBot();
+        TelegramBotRunner.getInstance().runBot(botName, botToken);
     }
 
     /**
@@ -64,50 +72,23 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration implemen
         StaplerRequestContainer.req = req;
 
         // Getting simple params from formData
-        this.shouldLogToConsole = formData.getBoolean("shouldLogToConsole");
-        this.botToken = formData.getString("botToken");
-        this.botName = formData.getString("botName");
+        setLogToConsole(formData.getBoolean("shouldLogToConsole"));
+        setBotToken(formData.getString("botToken"));
+        setBotName(formData.getString("botName"));
 
         // Approve users
         UserApprover userApprover = new UserApprover(users != null ? users : new HashSet<>());
         approvalType = userApprover.approve(formData);
         users = userApprover.getUsers();
 
-        // Store params to the global configuration
-        updateConfigSimpleParams();
-
         // Store users
         Subscribers.getInstance().setUsers(users != null ? new HashSet<>(users) : new HashSet<>());
+
+        TelegramBotRunner.getInstance().runBot(botName, botToken);
 
         // Save the configuration
         save();
         return super.configure(req, formData);
-    }
-
-    /**
-     * Called when recipients object have been changed
-     */
-    @Override
-    public void update(Observable observable, Object o) {
-        try {
-            users = Subscribers.getInstance().getUsers();
-            save();
-            super.configure(StaplerRequestContainer.req, new JSONObject());
-        } catch (FormException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error while saving the recipients map", e);
-        }
-    }
-
-    /**
-     * Update global config params using Jenkins config
-     */
-    private void updateConfigSimpleParams() {
-        jenkinsci.plugins.telegrambot.config.GlobalConfiguration config = jenkinsci.plugins.telegrambot.config.GlobalConfiguration.getInstance();
-
-        config.setLogToConsole(shouldLogToConsole != null ? shouldLogToConsole : true);
-        config.setBotToken(botToken != null ? botToken : "");
-        config.setBotName(botName != null ? botName : "");
-        config.setApprovalType(approvalType != null ? approvalType : UserApprover.ApprovalType.ALL);
     }
 
     public FormValidation doCheckMessage(@QueryParameter String value) throws IOException, ServletException {
@@ -121,26 +102,51 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration implemen
     @Nonnull
     @Override
     public String getDisplayName() {
-        return jenkinsci.plugins.telegrambot.config.GlobalConfiguration.PLUGIN_DISPLAY_NAME;
+        return PLUGIN_DISPLAY_NAME;
+    }
+
+    public Map<String, String> getBotStrings() {
+        return botStrings;
     }
 
     public Boolean shouldLogToConsole() {
         return shouldLogToConsole;
     }
 
+    public void setLogToConsole(Boolean shouldLogToConsole) {
+        this.shouldLogToConsole = shouldLogToConsole;
+    }
+
     public String getBotToken() {
         return botToken;
+    }
+
+    public void setBotToken(String botToken) {
+        this.botToken = botToken;
     }
 
     public String getBotName() {
         return botName;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public void setBotName(String botName) {
+        this.botName = botName;
+    }
+
+    public String getUsernames() {
+        return usernames;
+    }
+
+    public void setUsernames(String usernames) {
+        this.usernames = usernames;
     }
 
     public UserApprover.ApprovalType getApprovalType() {
         return approvalType;
     }
+
+    public void setApprovalType(UserApprover.ApprovalType approvalType) {
+        this.approvalType = approvalType;
+    }
+
 }

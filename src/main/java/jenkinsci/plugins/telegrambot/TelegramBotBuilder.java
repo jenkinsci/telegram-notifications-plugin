@@ -9,7 +9,6 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -38,7 +37,7 @@ public class TelegramBotBuilder extends Builder implements SimpleBuildStep {
         @Nonnull
         @Override
         public String getDisplayName() {
-            return GlobalConfiguration.PLUGIN_DISPLAY_NAME;
+            return TelegramBotGlobalConfiguration.PLUGIN_DISPLAY_NAME;
         }
     }
 

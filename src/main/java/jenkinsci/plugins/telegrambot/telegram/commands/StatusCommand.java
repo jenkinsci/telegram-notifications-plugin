@@ -1,6 +1,7 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
+import jenkins.model.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -11,6 +12,8 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.logging.BotLogger;
 
 public class StatusCommand extends AbstractBotCommand {
+
+    private static final TelegramBotGlobalConfiguration CONFIG = GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class);
 
     private static final String LOG_TAG = "/status";
 
@@ -30,7 +33,7 @@ public class StatusCommand extends AbstractBotCommand {
         if (isSubscribed) {
             boolean isApproved = subscribers.isApproved(id);
 
-            if (GlobalConfiguration.getInstance().getApprovalType() == UserApprover.ApprovalType.ALL) {
+            if (CONFIG.getApprovalType() == UserApprover.ApprovalType.ALL) {
                 toSend = botStrings.get("message.status.approved");
             } else {
                 toSend = isApproved
