@@ -5,14 +5,15 @@ import hudson.FilePath;
 import hudson.ProxyConfiguration;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
+import jenkins.model.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.commands.*;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
@@ -34,18 +35,18 @@ import org.telegram.telegrambots.exceptions.TelegramApiValidationException;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.TimeUnit;
-import java.nio.charset.StandardCharsets;
 
 import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
 
 public class TelegramBot extends TelegramLongPollingCommandBot {
     private static final Logger LOG = Logger.getLogger(TelegramBot.class.getName());
 
-    private static final GlobalConfiguration CONFIG = GlobalConfiguration.getInstance();
+    private static final TelegramBotGlobalConfiguration CONFIG = GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class);
     private static final Subscribers SUBSCRIBERS = Subscribers.getInstance();
 
     private final ObjectMapper objectMapper = new ObjectMapper();

@@ -1,6 +1,7 @@
 package jenkinsci.plugins.telegrambot.users;
 
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
+import jenkins.model.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -89,11 +90,11 @@ public class UserApprover {
         boolean oldStatus = user.isApproved();
         if (approved) {
             user.approve();
-            message = String.valueOf(GlobalConfiguration.getInstance()
+            message = String.valueOf(GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class)
                     .getBotStrings().get("message.approved"));
         } else {
             user.unapprove();
-            message = String.valueOf(GlobalConfiguration.getInstance()
+            message = String.valueOf(GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class)
                     .getBotStrings().get("message.unapproved"));
         }
 

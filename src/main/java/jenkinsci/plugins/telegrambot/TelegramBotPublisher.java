@@ -9,14 +9,11 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
 import hudson.tasks.Notifier;
+import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
-import jenkinsci.plugins.telegrambot.config.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
-import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -48,14 +45,23 @@ public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
         this.whenAborted = whenAborted;
     }
 
-    @Override
-    public BuildStepMonitor getRequiredMonitorService() {
-        return BuildStepMonitor.NONE;
+    @Extension
+    public static class Descriptor extends BuildStepDescriptor<Publisher> {
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+            return true;
+        }
+
+        @Nonnull
+        @Override
+        public String getDisplayName() {
+            return TelegramBotGlobalConfiguration.PLUGIN_DISPLAY_NAME;
+        }
     }
 
     @Override
-    public BuildStepDescriptor getDescriptor() {
-        return super.getDescriptor();
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.NONE;
     }
 
     @Override
@@ -77,29 +83,6 @@ public class TelegramBotPublisher extends Notifier implements SimpleBuildStep {
         if (neededToSend) {
             TelegramBotRunner.getInstance().getBot()
                     .sendMessage(getMessage(), run, filePath, taskListener);
-        }
-    }
-
-    @Extension
-    public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-
-        public DescriptorImpl() {
-        }
-
-        @Override
-        public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            return true;
-        }
-
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> clazz) {
-            return true;
-        }
-
-        @Nonnull
-        @Override
-        public String getDisplayName() {
-            return GlobalConfiguration.PLUGIN_DISPLAY_NAME;
         }
     }
 
