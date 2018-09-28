@@ -30,3 +30,7 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
 1. Add build-step (or post build-step)
 2. Fill the message (you can use environment variables and simple Markdown)
 3. Save your job
+
+##### Use in Pipeline
+telegramSend 'Hello World'
+
