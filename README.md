@@ -25,13 +25,11 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
 ### Create bot
 1. Find BotFather in Telegram ([@BotFather](https://t.me/@BotFather))
 2. Send */newbot* command 
-3. Enter bot name and bot username
+3. Follow the instructions
 
 ### Global config
 1. Open the Jenkins global config
-2. Paste your bot name and username to according textfields
-3. In filed *Usernames* fill names of users who can get Jenkins messages (separated by spaces) 
-4. Save 
+2. Paste your bot *name* and *token* to according textfields
 
 ### Subscribe for Jenkins messages
 1. In telegram find your bot and send */start* command
@@ -40,7 +38,6 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
 ### Manage your job
 1. Add a build step and/or a post build step
 2. Fill the message (you can use environment variables and simple Markdown)
-3. Save your job
 
 ### Use in Pipeline
 `telegramSend 'Hello World'`
