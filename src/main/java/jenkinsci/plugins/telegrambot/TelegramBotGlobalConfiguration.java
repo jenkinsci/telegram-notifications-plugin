@@ -4,7 +4,6 @@ import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
-import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.User;
@@ -20,7 +19,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +33,6 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
     private Boolean shouldLogToConsole;
     private String botToken;
     private String botName;
-    private String usernames;
     private UserApprover.ApprovalType approvalType;
     private Set<User> users;
 
@@ -57,6 +54,7 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
 
         // Save the loaded recipients map
         Subscribers.getInstance().setUsers(users != null ? users : new HashSet<>());
+        Subscribers.getInstance().addObserver(this::onSubscribersUpdate);
 
         // Run the bot after Jenkins config has been loaded
         TelegramBotRunner.getInstance().runBot(botName, botToken);
@@ -89,6 +87,11 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
         // Save the configuration
         save();
         return super.configure(req, formData);
+    }
+
+    private void onSubscribersUpdate(Observable o, Object arg) {
+        users = Subscribers.getInstance().getUsers();
+        save();
     }
 
     public FormValidation doCheckMessage(@QueryParameter String value) throws IOException, ServletException {
@@ -133,12 +136,8 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
         this.botName = botName;
     }
 
-    public String getUsernames() {
-        return usernames;
-    }
-
-    public void setUsernames(String usernames) {
-        this.usernames = usernames;
+    public Set<User> getUsers() {
+        return users;
     }
 
     public UserApprover.ApprovalType getApprovalType() {
