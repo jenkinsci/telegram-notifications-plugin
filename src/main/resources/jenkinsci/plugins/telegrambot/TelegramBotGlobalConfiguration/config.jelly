@@ -22,7 +22,7 @@
 
         <f:entry title="Log to console" field="shouldLogToConsole"
                  description="Check if we should log messages to Jenkins console">
-            <f:checkbox default="true"/>
+            <f:checkbox/>
         </f:entry>
 
         <f:entry title="Telegram Bot name" field="botName" description="Paste your bot name">

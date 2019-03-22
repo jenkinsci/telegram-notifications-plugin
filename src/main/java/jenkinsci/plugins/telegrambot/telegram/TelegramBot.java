@@ -106,7 +106,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
             LOG.log(Level.SEVERE, "Error while sending the message", e);
         }
 
-        if (CONFIG.shouldLogToConsole()) taskListener.getLogger().println(logMessage);
+        if (CONFIG.isShouldLogToConsole()) taskListener.getLogger().println(logMessage);
     }
 
     @Override
