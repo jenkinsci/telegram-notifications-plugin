@@ -22,7 +22,7 @@ public class SubCommand extends AbstractBotCommand {
         String ans;
 
         Long id = chat.getId();
-        String name = chat.isUserChat() ? user.getUserName() : chat.getTitle();
+        String name = chat.isUserChat() ? user.toString() : chat.toString();
 
         boolean isSubscribed = subscribers.isSubscribed(id);
 
