@@ -3,7 +3,7 @@
 
     <style>
         .t1 {
-        width: 25px;
+        width: 10%;
         display: inline-block;
         }
 
@@ -13,7 +13,7 @@
         }
 
         .t3 {
-        width: 25%;
+        width: 15%;
         display: inline-block;
         }
     </style>
@@ -48,6 +48,7 @@
                             <div style="display: inline;">
 
                                 <div class="t1">
+                                    <b>Approved</b>
                                 </div>
                                 <div class="t2">
                                     <b>User/Chat</b>
