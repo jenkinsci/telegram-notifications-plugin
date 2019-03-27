@@ -30,7 +30,7 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
     final static String PLUGIN_DISPLAY_NAME = "TelegramBot";
     private final Map<String, String> botStrings;
 
-    private Boolean shouldLogToConsole;
+    private Boolean shouldLogToConsole = Boolean.TRUE;
     private String botToken;
     private String botName;
     private UserApprover.ApprovalType approvalType;
@@ -70,7 +70,7 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
         StaplerRequestContainer.req = req;
 
         // Getting simple params from formData
-        setLogToConsole(formData.getBoolean("shouldLogToConsole"));
+        setShouldLogToConsole(formData.getBoolean("shouldLogToConsole"));
         setBotToken(formData.getString("botToken"));
         setBotName(formData.getString("botName"));
 
@@ -112,11 +112,11 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
         return botStrings;
     }
 
-    public Boolean shouldLogToConsole() {
+    public Boolean isShouldLogToConsole() {
         return shouldLogToConsole;
     }
 
-    public void setLogToConsole(Boolean shouldLogToConsole) {
+    public void setShouldLogToConsole(Boolean shouldLogToConsole) {
         this.shouldLogToConsole = shouldLogToConsole;
     }
 
