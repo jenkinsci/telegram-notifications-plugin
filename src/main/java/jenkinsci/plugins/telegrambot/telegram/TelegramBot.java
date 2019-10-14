@@ -85,28 +85,44 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
         }
     }
 
-    public void sendMessage(
-            String message, Run<?, ?> run, FilePath filePath, TaskListener taskListener)
+    private static String expandMessage(String message, Run<?, ?> run, FilePath filePath, TaskListener taskListener)
             throws IOException, InterruptedException {
 
-        String logMessage = message;
         try {
-            logMessage = TokenMacro.expandAll(run, filePath, taskListener, message);
+            return TokenMacro.expandAll(run, filePath, taskListener, message);
         } catch (MacroEvaluationException e) {
             LOG.log(Level.SEVERE, "Error while expanding the message", e);
         }
 
-        try {
-            final String finalLogMessage = logMessage;
+        return message;
+    }
 
-            SUBSCRIBERS.getApprovedUsers()
-                    .forEach(user -> this.sendMessage(user.getId(), finalLogMessage));
+    public void sendMessage(
+            Long chatId, String message, Run<?, ?> run, FilePath filePath, TaskListener taskListener)
+            throws IOException, InterruptedException {
+
+        final String expandedMessage = expandMessage(message, run, filePath, taskListener);
+
+        try {
+            if (chatId == null) {
+                SUBSCRIBERS.getApprovedUsers()
+                        .forEach(user -> this.sendMessage(user.getId(), expandedMessage));
+            } else {
+                sendMessage(chatId, expandedMessage);
+            }
 
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error while sending the message", e);
         }
 
-        if (CONFIG.isShouldLogToConsole()) taskListener.getLogger().println(logMessage);
+        if (CONFIG.isShouldLogToConsole()) taskListener.getLogger().println(expandedMessage);
+    }
+
+    public void sendMessage(
+            String message, Run<?, ?> run, FilePath filePath, TaskListener taskListener)
+            throws IOException, InterruptedException {
+
+        sendMessage(null, message, run, filePath, taskListener);
     }
 
     @Override
