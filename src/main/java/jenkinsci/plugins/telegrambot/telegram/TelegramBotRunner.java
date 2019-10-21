@@ -62,6 +62,11 @@ public class TelegramBotRunner {
     };
 
     private void createBotSession() {
+        if (botSession != null && botSession.isRunning()) {
+            LOG.info("Stopping previous bot session");
+            botSession.stop();
+        }
+
         try {
             botSession = api.registerBot(bot);
             LOG.log(Level.INFO, "New bot session was registered");
