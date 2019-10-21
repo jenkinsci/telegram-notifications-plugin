@@ -3,9 +3,9 @@ package jenkinsci.plugins.telegrambot.telegram;
 import jenkins.model.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.generics.BotSession;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotSession;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

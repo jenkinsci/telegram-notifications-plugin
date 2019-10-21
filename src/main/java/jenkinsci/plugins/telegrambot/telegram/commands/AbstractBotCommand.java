@@ -2,7 +2,7 @@ package jenkinsci.plugins.telegrambot.telegram.commands;
 
 import jenkins.model.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
-import org.telegram.telegrambots.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 
 import java.util.Map;
 
