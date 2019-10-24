@@ -12,9 +12,11 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
+import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -25,6 +27,11 @@ public class TelegramBotMessager extends Notifier implements SimpleBuildStep {
      * The message that will be expanded and sent to users
      */
     private final String message;
+
+    /**
+     * The chat where the message will be sent. If not set (null), the message will be sent to all subscribers.
+     */
+    private Long chatId;
 
 
     @DataBoundConstructor
@@ -60,14 +67,20 @@ public class TelegramBotMessager extends Notifier implements SimpleBuildStep {
             @Nonnull Launcher launcher,
             @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
 
-            TelegramBotRunner.getInstance().getBot()
-                    .sendMessage(getMessage(), run, filePath, taskListener);
-
+            TelegramBotRunner.getInstance().getBot().
+                    sendMessage(getChatId(), getMessage(), run, filePath, taskListener);
     }
 
     public String getMessage() {
         return message;
     }
 
+    public Long getChatId() {
+        return chatId;
+    }
 
+    @DataBoundSetter
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
 }

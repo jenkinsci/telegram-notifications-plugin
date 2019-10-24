@@ -42,3 +42,5 @@ This plugin allows **Jenkins** to send notifications via **telegram** bot.
 ### Use in Pipeline
 `telegramSend 'Hello World'`
 
+Or, to send the message to some specific chat/channel:
+`telegramSend(message: 'Hello World', chatId: 1234567890)`
