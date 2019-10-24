@@ -30,7 +30,7 @@
         <jacoco.version>0.7.4.201502262128</jacoco.version>
 
         <!--Libraries-->
-        <telegrambots.version>3.6</telegrambots.version>
+        <telegrambots.version>4.3.1</telegrambots.version>
         <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
         <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
         <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
