@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.4</version>
+        <version>3.57</version>
         <relativePath />
     </parent>
 
@@ -30,7 +30,8 @@
         <jacoco.version>0.7.4.201502262128</jacoco.version>
 
         <!--Libraries-->
-        <telegrambots.version>4.3.1</telegrambots.version>
+        <slf4j.version>1.7.29</slf4j.version>
+        <telegrambots.version>4.6</telegrambots.version>
         <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
         <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
         <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
@@ -65,7 +66,7 @@
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <layout>default</layout>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -81,6 +82,11 @@
     </pluginRepositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
         <!--Telegram Bot related dependencies-->
         <dependency>

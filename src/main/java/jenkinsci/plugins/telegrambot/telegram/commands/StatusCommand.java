@@ -4,18 +4,20 @@ import jenkins.model.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.logging.BotLogger;
 
 public class StatusCommand extends AbstractBotCommand {
 
     private static final TelegramBotGlobalConfiguration CONFIG = GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class);
 
     private static final String LOG_TAG = "/status";
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatusCommand.class);
 
     public StatusCommand() {
         super("status", "command.status");
@@ -51,7 +53,7 @@ public class StatusCommand extends AbstractBotCommand {
         try {
             absSender.execute(answer);
         } catch (TelegramApiException e) {
-            BotLogger.error(LOG_TAG, e);
+            LOGGER.error(LOG_TAG, e);
         }
     }
 }

@@ -1,15 +1,17 @@
 package jenkinsci.plugins.telegrambot.telegram.commands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.logging.BotLogger;
 
 public class HelpCommand extends AbstractBotCommand {
 
     private static final String LOG_TAG = "/help";
+    private static final Logger LOGGER = LoggerFactory.getLogger(HelpCommand.class);
 
     public HelpCommand() {
         super("help", "command.help");
@@ -24,7 +26,7 @@ public class HelpCommand extends AbstractBotCommand {
         try {
             absSender.execute(answer);
         } catch (TelegramApiException e) {
-            BotLogger.error(LOG_TAG, e);
+            LOGGER.error(LOG_TAG, e);
         }
     }
 }
