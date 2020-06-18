@@ -1,5 +1,22 @@
 package jenkinsci.plugins.telegrambot;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;
@@ -8,18 +25,7 @@ import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
 import jenkinsci.plugins.telegrambot.users.User;
 import jenkinsci.plugins.telegrambot.users.UserApprover;
-import jenkinsci.plugins.telegrambot.utils.StaplerRequestContainer;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This class if user for the storing global plugin configuration.
@@ -65,9 +71,6 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
      */
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-
-        // Save for the future using
-        StaplerRequestContainer.req = req;
 
         // Getting simple params from formData
         setShouldLogToConsole(formData.getBoolean("shouldLogToConsole"));
