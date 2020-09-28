@@ -3,6 +3,7 @@ package jenkinsci.plugins.telegrambot;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.util.FormValidation;
+import hudson.util.Secret;
 import jenkins.model.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
 import jenkinsci.plugins.telegrambot.users.Subscribers;
@@ -125,7 +126,7 @@ public class TelegramBotGlobalConfiguration extends GlobalConfiguration {
     }
 
     public void setBotToken(String botToken) {
-        this.botToken = botToken;
+        this.botToken = Secret.fromString(botToken).getPlainText();
     }
 
     public String getBotName() {
