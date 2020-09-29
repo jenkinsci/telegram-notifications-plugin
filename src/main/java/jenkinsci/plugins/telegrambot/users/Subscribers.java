@@ -32,7 +32,8 @@ public class Subscribers extends Observable {
     }
 
     public Set<User> getApprovedUsers() {
-        if (GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class).getApprovalType() == UserApprover.ApprovalType.ALL) {
+        TelegramBotGlobalConfiguration c = GlobalConfiguration.all().get(TelegramBotGlobalConfiguration.class);
+        if (c != null && c.getApprovalType() == UserApprover.ApprovalType.ALL) {
             return users.stream().collect(Collectors.toSet());
         }
 

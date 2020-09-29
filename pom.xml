@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.57</version>
+        <version>4.0</version>
         <relativePath />
     </parent>
 
     <artifactId>telegram-notifications</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Telegram Bot Plugin</name>
@@ -22,16 +22,13 @@
         <!--Versions-->
 
         <java.level>8</java.level>
-        <jenkins.version>2.7</jenkins.version>
+        <jenkins.version>2.164.3</jenkins.version>
 
-        <!--Maven plugins-->
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-        <jacoco.version>0.7.4.201502262128</jacoco.version>
+        <jacoco.version>0.8.5</jacoco.version>
 
         <!--Libraries-->
         <slf4j.version>1.7.29</slf4j.version>
-        <telegrambots.version>4.6</telegrambots.version>
+        <telegrambots.version>4.9</telegrambots.version>
         <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
         <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
         <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
@@ -80,8 +77,30 @@
             <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
     </pluginRepositories>
-
+    
     <dependencies>
+	      <dependency>
+	        <groupId>org.jenkins-ci.main</groupId>
+	        <artifactId>jenkins-core</artifactId>
+	        <version>2.164.3</version>
+	        <exclusions>
+		      <exclusion> 
+		        <groupId>com.google.inject</groupId>
+		          <artifactId>guice</artifactId>
+		        </exclusion>
+		    </exclusions>
+	      </dependency>
+	      <dependency>
+	        <groupId>org.jenkins-ci.main</groupId>
+	        <artifactId>jenkins-core</artifactId>
+	        <version>2.164.3</version>
+	        <exclusions>
+		      <exclusion> 
+		        <groupId>org.jenkins-ci</groupId>
+		          <artifactId>symbol-annotation</artifactId>
+		        </exclusion>
+		    </exclusions>
+	      </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -98,6 +117,12 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-meta</artifactId>
             <version>${telegrambots.version}</version>
+            <exclusions>
+		        <exclusion> 
+		          <groupId>com.google.inject</groupId>
+		          <artifactId>guice</artifactId>
+		        </exclusion>
+		    </exclusions>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
@@ -111,6 +136,12 @@
             <artifactId>job-dsl</artifactId>
             <version>${jenkins.plugins.job-dsl.version}</version>
             <optional>true</optional>
+             <exclusions>
+		        <exclusion> 
+		          <groupId>org.codehaus.groovy</groupId>
+		          <artifactId>groovy-all</artifactId>
+		        </exclusion>
+		    </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -129,12 +160,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.level}</source>
                     <target>${java.level}</target>
@@ -146,7 +175,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

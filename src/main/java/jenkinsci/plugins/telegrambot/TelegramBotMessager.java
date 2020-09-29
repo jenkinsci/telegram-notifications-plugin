@@ -1,10 +1,17 @@
 package jenkinsci.plugins.telegrambot;
 
+import java.io.IOException;
+
+import javax.annotation.Nonnull;
+
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -12,14 +19,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
-import jenkinsci.plugins.telegrambot.telegram.TelegramBot;
 import jenkinsci.plugins.telegrambot.telegram.TelegramBotRunner;
-import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-
-import javax.annotation.Nonnull;
-import java.io.IOException;
 
 public class TelegramBotMessager extends Notifier implements SimpleBuildStep {
 

@@ -1,14 +1,16 @@
 package jenkinsci.plugins.telegrambot.telegram;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import hudson.FilePath;
-import hudson.ProxyConfiguration;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import jenkins.model.GlobalConfiguration;
-import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
-import jenkinsci.plugins.telegrambot.telegram.commands.*;
-import jenkinsci.plugins.telegrambot.users.Subscribers;
+import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -24,24 +26,32 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.util.EntityUtils;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
+import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
+import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
+import hudson.FilePath;
+import hudson.ProxyConfiguration;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import jenkins.model.GlobalConfiguration;
+import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
+import jenkinsci.plugins.telegrambot.telegram.commands.HelpCommand;
+import jenkinsci.plugins.telegrambot.telegram.commands.StartCommand;
+import jenkinsci.plugins.telegrambot.telegram.commands.StatusCommand;
+import jenkinsci.plugins.telegrambot.telegram.commands.SubCommand;
+import jenkinsci.plugins.telegrambot.telegram.commands.UnsubCommand;
+import jenkinsci.plugins.telegrambot.users.Subscribers;
+import jenkinsci.plugins.telegrambot.users.User;
 
 public class TelegramBot extends TelegramLongPollingCommandBot {
     private static final Logger LOG = Logger.getLogger(TelegramBot.class.getName());
@@ -53,14 +63,14 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     private final String token;
     private volatile CloseableHttpClient httpclient;
     private volatile RequestConfig requestConfig;
+	private static String botUsername;
 
 
     public TelegramBot(String token, String name) {
-        super(name);
+    	super(ApiContext.getInstance(DefaultBotOptions.class), allowCommandsWithUsername(name));
         this.token = token;
-
+        LOG.log(Level.INFO, "Created bot:"+botUsername);
         initializeProxy();
-
         Arrays.asList(
                 new StartCommand(),
                 new HelpCommand(),
@@ -69,8 +79,24 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
                 new StatusCommand()
         ).forEach(this::register);
     }
+    /**
+     * This ugly fix caused by incorrect TelegramLongPollingCommandBot class implementation: there is
+     * 
+     public TelegramLongPollingCommandBot(DefaultBotOptions options, boolean allowCommandsWithUsername) {
+        super(options);
+        this.commandRegistry = new CommandRegistry(allowCommandsWithUsername, this.getBotUsername());
+     } 
+     * which runs this.getBotUsername() method returning null in CommandRegistry constructor.
+     *
+     * @param name
+     * @return
+     */
+    private static boolean allowCommandsWithUsername(String name) {
+    	botUsername = name;
+		return true;
+	}
 
-    public void sendMessage(Long chatId, String message) {
+	public void sendMessage(Long chatId, String message) {
         final SendMessage sendMessageRequest = new SendMessage();
 
         sendMessageRequest.setChatId(chatId.toString());
@@ -105,8 +131,12 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
 
         try {
             if (chatId == null) {
-                SUBSCRIBERS.getApprovedUsers()
-                        .forEach(user -> this.sendMessage(user.getId(), expandedMessage));
+            	Set<User> users = SUBSCRIBERS.getApprovedUsers();
+            	if(users.size()>0) {
+            		users.forEach(user -> this.sendMessage(user.getId(), expandedMessage));
+            	} else {
+            		LOG.log(Level.WARNING, "No subscribed users found");
+            	}
             } else {
                 sendMessage(chatId, expandedMessage);
             }
@@ -261,4 +291,9 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
             return EntityUtils.toString(bufferedHttpEntity, StandardCharsets.UTF_8);
         }
     }
+
+	@Override
+	public String getBotUsername() {
+		return botUsername;
+	}
 }

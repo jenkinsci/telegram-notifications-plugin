@@ -1,16 +1,13 @@
 package jenkinsci.plugins.telegrambot.telegram;
 
-import jenkins.model.GlobalConfiguration;
-import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.meta.generics.BotSession;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotSession;
 
 public class TelegramBotRunner {
     private static TelegramBotRunner instance;
@@ -53,7 +50,6 @@ public class TelegramBotRunner {
                 || !bot.getBotToken().equals(botToken)
                 || !bot.getBotUsername().equals(botName)) {
             bot = new TelegramBot(botToken, botName);
-            LOG.log(Level.INFO, "Bot was created");
         } else {
             LOG.log(Level.INFO, "There is no reason for bot recreating");
             return;
