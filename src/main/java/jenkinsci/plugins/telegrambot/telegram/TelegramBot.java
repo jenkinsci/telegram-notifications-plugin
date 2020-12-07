@@ -66,7 +66,8 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
                 new HelpCommand(),
                 new SubCommand(),
                 new UnsubCommand(),
-                new StatusCommand()
+                new StatusCommand(),
+                new ChatidCommand()
         ).forEach(this::register);
     }
 
