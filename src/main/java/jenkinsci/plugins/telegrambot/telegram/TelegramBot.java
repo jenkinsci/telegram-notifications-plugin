@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URLEncoder;
 
 import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
 
@@ -171,7 +172,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     }
 
     private HttpPost configuredHttpPost(String url) {
-        HttpPost httpPost = new HttpPost(url);
+        HttpPost httpPost = new HttpPost(URLEncoder.encode(url, StandardCharsets.UTF_8));
         httpPost.setConfig(requestConfig);
         return httpPost;
     }
