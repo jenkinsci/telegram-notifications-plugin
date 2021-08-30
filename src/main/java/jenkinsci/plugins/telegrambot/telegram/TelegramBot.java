@@ -5,6 +5,7 @@ import hudson.FilePath;
 import hudson.ProxyConfiguration;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.util.Secret;
 import jenkins.model.GlobalConfiguration;
 import jenkinsci.plugins.telegrambot.TelegramBotGlobalConfiguration;
 import jenkinsci.plugins.telegrambot.telegram.commands.*;
@@ -57,7 +58,7 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
 
     public TelegramBot(String token, String name) {
         super(name);
-        this.token = token;
+        this.token = Secret.fromString(token).getPlainText();
 
         initializeProxy();
 
