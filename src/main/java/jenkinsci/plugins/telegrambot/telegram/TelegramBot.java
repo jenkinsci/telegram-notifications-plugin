@@ -53,11 +53,11 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
     private final String token;
     private volatile CloseableHttpClient httpclient;
     private volatile RequestConfig requestConfig;
-
+    private final String name;
 
     public TelegramBot(String token, String name) {
-        super(name);
         this.token = token;
+        this.name = name;
 
         initializeProxy();
 
@@ -260,5 +260,10 @@ public class TelegramBot extends TelegramLongPollingCommandBot {
             BufferedHttpEntity bufferedHttpEntity = new BufferedHttpEntity(httpEntity);
             return EntityUtils.toString(bufferedHttpEntity, StandardCharsets.UTF_8);
         }
+    }
+
+    @Override
+    public String getBotUsername() {
+        return name;
     }
 }

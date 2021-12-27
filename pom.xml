@@ -26,12 +26,13 @@
 
         <!--Maven plugins-->
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
-        <jacoco.version>0.7.4.201502262128</jacoco.version>
+        <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+        <jacoco.version>0.8.5</jacoco.version>
 
         <!--Libraries-->
-        <slf4j.version>1.7.29</slf4j.version>
-        <telegrambots.version>4.6</telegrambots.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <telegrambots.version>5.5.0</telegrambots.version>
         <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
         <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
         <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
@@ -147,6 +148,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
