@@ -34,7 +34,7 @@
         <telegrambots.version>4.6</telegrambots.version>
         <jenkins.plugins.job-dsl.version>1.68</jenkins.plugins.job-dsl.version>
         <jenkins.plugins.structs.version>1.13</jenkins.plugins.structs.version>
-        <jenkins.plugins.token-macro.version>2.3</jenkins.plugins.token-macro.version>
+        <jenkins.plugins.token-macro.version>2.6</jenkins.plugins.token-macro.version>
 
         <!--Properties-->
 
